@@ -60,9 +60,11 @@ def test_initializeTideGrabber(mocker):
     endDate = "20240131"
     saveDir = "path/to/saveDir"
     station_id = '11111'
+    bucketName = 'shoreline-pipeline'
+    s3Key = f"tides/{startDate}_{endDate}_tides.csv"
     expected_savePath = f"{saveDir}/{startDate}_{endDate}_tides.csv"
 
-    args = [startDate, endDate, saveDir, station_id]
+    args = [startDate, endDate, saveDir, station_id, bucketName]
 
     tide_grabber =  initializeTideGrabber(args)
     assert isinstance(tide_grabber, TideGrabber)
@@ -71,6 +73,8 @@ def test_initializeTideGrabber(mocker):
     assert tide_grabber.endDate == endDate
     assert tide_grabber.savePath == expected_savePath
     assert tide_grabber.stationID == station_id 
+    assert tide_grabber.bucketName == bucketName 
+    assert tide_grabber.s3Key == s3Key 
 
 def test_TideGrabber_request_sucess():
     """Test the behaviour of of TideGrabber.request on success
