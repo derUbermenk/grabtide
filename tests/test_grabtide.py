@@ -206,11 +206,13 @@ def test_TideGrabber_run():
     mock_content = b'content'
     with patch('grabtide.TideGrabber.request', return_value=mock_content) as mock_request:
         with patch('grabtide.TideGrabber.saveResponse') as mock_saveResponse:
-            tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id, bucketName, s3Key)
-            tide_grabber.run()
+            with patch('grabtide.TideGrabber.uploadTides') as mock_uploadTides:
+                tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id, bucketName, s3Key)
+                tide_grabber.run()
 
-            mock_request.assert_called_once() 
-            mock_saveResponse.assert_called_once_with(mock_content)
+                mock_request.assert_called_once() 
+                mock_saveResponse.assert_called_once_with(mock_content)
+                mock_uploadTides.assert_called_once()
 
 def test_integration_TideGrabber_run():
     """integration test for behaviour of TideGrabber.run()
@@ -235,22 +237,26 @@ def test_integration_TideGrabber_run():
     expected_savePath = os.path.join(saveDir, f"{startDate}_{endDate}_tides.csv")
     expected_columns = ["dates","tide"]
 
+    with patch('grabtide.TideGrabber.uploadTides') as mock_uploadTides:
 
-    tide_grabber.run()
+        tide_grabber.run()
 
-    assert os.path.exists(expected_savePath)
-    assert os.path.isfile(expected_savePath)
-    with open(expected_savePath, mode='r', newline='', encoding='utf-8') as output:
-        output = csv.reader(output)
-        rows = list(output)
+        assert os.path.exists(expected_savePath)
+        assert os.path.isfile(expected_savePath)
 
-        # assert that we get the correct headers  
-        assert rows[0] == expected_columns
-        
-        # assert that the first Date time is whats expected
-        assert rows[1][0] == "2024-01-01 00:00"
-        assert rows[-1][0] == "2024-01-31 23:00"
+        with open(expected_savePath, mode='r', newline='', encoding='utf-8') as output:
+            output = csv.reader(output)
+            rows = list(output)
 
+            # assert that we get the correct headers  
+            assert rows[0] == expected_columns
+            
+            # assert that the first Date time is whats expected
+            assert rows[1][0] == "2024-01-01 00:00"
+            assert rows[-1][0] == "2024-01-31 23:00"
+
+
+        mock_uploadTides.assert_called_once()
     
 
 
