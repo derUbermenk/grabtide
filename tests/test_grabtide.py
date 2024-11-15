@@ -70,6 +70,8 @@ def test_TideGrabber_request_sucess():
     endDate = "20240131"
     saveDir = "path/to/saveDir"
     station_id = '9440083'
+    bucketName = 'shoreline-pipeline'
+    s3Key = f"tides/{startDate}_{endDate}_tides.csv"
 
     correct_url = 'https://tidesandcurrents.noaa.gov/api/datagetter' 
     correct_params = {
@@ -85,7 +87,7 @@ def test_TideGrabber_request_sucess():
         'format': 'csv'
     }
 
-    tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id)
+    tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id, bucketName, s3Key)
 
     successful_response = Mock() 
     successful_response.status_code = 200 
@@ -113,6 +115,8 @@ def test_TideGrabber_request_unsucessful():
     endDate = "20240131"
     saveDir = "path/to/saveDir"
     station_id = '9440083'
+    bucketName = 'shoreline-pipeline'
+    s3Key = f"tides/{startDate}_{endDate}_tides.csv"
 
     correct_url = 'https://tidesandcurrents.noaa.gov/api/datagetter' 
     correct_params = {
@@ -128,8 +132,7 @@ def test_TideGrabber_request_unsucessful():
         'format': 'csv'
     }
 
-
-    tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id)
+    tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id, bucketName, s3Key)
 
     unsuccessful_response = Mock() 
     unsuccessful_response.status_code = 404
@@ -163,8 +166,10 @@ def test_TideGrabber_saveResponse():
     saveDir = tmp_dir.name 
     station_id = '9440083'
     expected_savePath = os.path.join(saveDir, f"{startDate}_{endDate}_tides.csv")
+    bucketName = 'shoreline-pipeline'
+    s3Key = f"tides/{startDate}_{endDate}_tides.csv"
 
-    tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id)
+    tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id, bucketName, s3Key)
 
     initial_data = b'dates,tide\nvalue1,value2\nvalue3,value4'
     new_data = b'dates,tide\nvalue5,value6\nvalue7,value8'
@@ -195,11 +200,13 @@ def test_TideGrabber_run():
     endDate = "20240131"
     saveDir = "path/to/saveDir"
     station_id = '9440083'
+    bucketName = 'shoreline-pipeline'
+    s3Key = f"tides/{startDate}_{endDate}_tides.csv"
 
     mock_content = b'content'
     with patch('grabtide.TideGrabber.request', return_value=mock_content) as mock_request:
         with patch('grabtide.TideGrabber.saveResponse') as mock_saveResponse:
-            tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id)
+            tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id, bucketName, s3Key)
             tide_grabber.run()
 
             mock_request.assert_called_once() 
@@ -220,8 +227,10 @@ def test_integration_TideGrabber_run():
     endDate = "20240131"
     saveDir = tmp_dir.name 
     station_id = '9440083'
+    bucketName = 'shoreline-pipeline'
+    s3Key = f"tides/{startDate}_{endDate}_tides.csv"
 
-    tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id)
+    tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id, bucketName, s3Key)
 
     expected_savePath = os.path.join(saveDir, f"{startDate}_{endDate}_tides.csv")
     expected_columns = ["dates","tide"]
