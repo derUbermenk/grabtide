@@ -190,6 +190,32 @@ def test_TideGrabber_saveResponse():
         contents = f.read()
         assert contents == new_data 
 
+def test_TideGrabber_uploadTides():
+    """
+    test the behavour of TideGrabber.uploadTides
+    
+    expected behaviour:
+    creates an s3 boto3 client
+    uploads files using correct parameters
+    """
+    startDate = "20240101"
+    endDate = "20240131"
+    saveDir =  "/tmp" 
+    station_id = '9440083'
+    bucketName = 'shoreline-pipeline'
+    s3Key = f"tides/{startDate}_{endDate}_tides.csv"
+
+    tide_grabber = TideGrabber(startDate, endDate, saveDir, station_id, bucketName, s3Key)
+    
+    with patch('boto3.client') as mock_boto_client:
+        mock_s3 = Mock()
+        mock_boto_client.return_value = mock_s3
+        
+        tide_grabber.uploadTides()
+
+        mock_boto_client.assert_called_once_with('s3')
+        mock_s3.upload_file.assert_called_once_with(tide_grabber.savePath, tide_grabber.bucketName, tide_grabber.s3Key)
+
 def test_TideGrabber_run():
     """unit test for tideGrabber.run()
     
