@@ -118,7 +118,7 @@ def initializeTideGrabber(args) -> TideGrabber:
 
     checkDirExists(args_.saveDir)
 
-    tide_grabber = TideGrabber(args_.startdate, args_.enddate, args_.saveDir, args_.stationid)
+    tide_grabber = TideGrabber(args_.startdate, args_.enddate, args_.saveDir, args_.stationid, args_.bucketName, args_.s3Key)
     return tide_grabber
 
 if __name__ == "__main__":
