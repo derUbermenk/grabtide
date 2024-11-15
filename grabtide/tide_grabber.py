@@ -4,6 +4,9 @@ import argparse
 import requests
 import os
 import sys
+import boto3
+
+
 
 class TideGrabber():
     def __init__(self, startDate: str, endDate: str, saveDir: str, station_id: str, bucketName: str, s3Key: str, interval: str = 'h'):
@@ -79,10 +82,25 @@ class TideGrabber():
 
         with open(self.savePath, 'w', newline='') as file:
             file.write(updated_content)
+    
+    def uploadTides(self):
+        # Initialize the S3 client
+        s3_client = boto3.client('s3')
+
+        # Specify the details
+        bucket_name = 'my-bucket'
+        file_path = 'path/to/local/file.txt'            # Local path to the file you want to upload
+        s3_key = 'uploads/file.txt'                     # S3 key (the destination path in S3)
+
+        # Upload the file
+        s3_client.upload_file(self.savePath, self.bucketName, self.s3Key)
+
+        print(f"File uploaded to s3://{bucket_name}/{s3_key}")
 
     def run(self):    
         response_content = self.request()
         self.saveResponse(response_content)
+        self.uploadTides()
 
 def checkDirExists(path: str):
     """Checks if save directory exists 
