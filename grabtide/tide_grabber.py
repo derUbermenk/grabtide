@@ -6,7 +6,7 @@ import os
 import sys
 
 class TideGrabber():
-    def __init__(self, startDate: str, endDate: str, saveDir: str, station_id: str, interval: str = 'h'):
+    def __init__(self, startDate: str, endDate: str, saveDir: str, station_id: str, bucketName: str, s3Key: str, interval: str = 'h'):
         """Initializes a tide grabber object
 
         Parameters
@@ -107,6 +107,8 @@ def initializeTideGrabber(args) -> TideGrabber:
     parser.add_argument('enddate', help='end date of range (yyyymmdd)')
     parser.add_argument('saveDir', help='save dir of csv file')
     parser.add_argument('stationid', help='stationid')
+    parser.add_argument('bucketName', help='bucket name')
+    parser.add_argument('s3Key', help='s3 key')
     parser.add_argument('--units', help='units')
     parser.add_argument('--interval', help='interval')
     parser.add_argument('--timezone', help='timezone')
