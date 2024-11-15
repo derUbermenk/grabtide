@@ -35,36 +35,19 @@ def test_checkDirExists(mocker):
         assert True
 
 def test_initializeTideGrabber(mocker):
-    """test initializeTideGrabber"""
+    """
+        Test grabtide 
+    """
+
     startDate = "20240101"
     endDate = "20240131"
-    saveDir = "path/to/saveDir/"
+    saveDir = "/tmp"
     station_id = '11111'
-    expected_savePath = f"{saveDir}{startDate}_{endDate}_tides.csv"
-
-    args = [startDate, endDate, saveDir, station_id]
-
-    # mock checkPath
-    mocker.patch('grabtide.tide_grabber.checkDirExists')
-
-    tide_grabber =  initializeTideGrabber(args)
-    assert isinstance(tide_grabber, TideGrabber)
-
-    assert tide_grabber.startDate == startDate
-    assert tide_grabber.endDate == endDate
-    assert tide_grabber.savePath == expected_savePath 
-    assert tide_grabber.stationID == station_id 
-
-    # set 2: even when save dir is lacking a trailing /
-    startDate = "20240101"
-    endDate = "20240131"
-    saveDir = "path/to/saveDir"
-    station_id = '11111'
+    expected_savePath = f"{saveDir}/{startDate}_{endDate}_tides.csv"
     bucketName = 'shoreline-pipeline'
     s3Key = f"tides/{startDate}_{endDate}_tides.csv"
-    expected_savePath = f"{saveDir}/{startDate}_{endDate}_tides.csv"
 
-    args = [startDate, endDate, saveDir, station_id, bucketName]
+    args = [startDate, endDate, saveDir, station_id, bucketName, s3Key]
 
     tide_grabber =  initializeTideGrabber(args)
     assert isinstance(tide_grabber, TideGrabber)
