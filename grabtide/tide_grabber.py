@@ -25,6 +25,8 @@ class TideGrabber():
 
         self.savePath = self.formatSavePath()
         self.interval = interval
+        self.bucketName = bucketName 
+        self.s3Key = s3Key 
         return
 
     def formatSavePath(self):
