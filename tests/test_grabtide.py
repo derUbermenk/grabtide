@@ -59,6 +59,66 @@ def test_initializeTideGrabber(mocker):
     assert tide_grabber.bucketName == bucketName 
     assert tide_grabber.s3Key == s3Key 
 
+def test_initializeTideGrabber_with_keys(mocker):
+    """
+        Test grabtide inizialization using keys
+    """
+
+    startDate = "20240101"
+    endDate = "20240131"
+    saveDir = "/tmp"
+    station_id = '11111'
+    expected_savePath = f"{saveDir}/{startDate}_{endDate}_tides.csv"
+    bucketName = 'shoreline-pipeline'
+    s3Key = f"tides/{startDate}_{endDate}_tides.csv"
+    useAccessKeys = "--useAccessKeys"
+
+    args = [startDate, endDate, saveDir, station_id, bucketName, s3Key, useAccessKeys]
+
+    # it fails when no access keys are available in env
+    try:
+        tide_grabber =  initializeTideGrabber(args)
+    except SystemExit as e:
+       assert True 
+       assert e.code == 1
+    else:
+        assert False
+        
+    # it initializes when access keys are available in env
+    try:
+       old_access_key = os.environ.get("AWS_ACCESS_KEY_ID")
+       old_secret_access_key = os.environ.get("AWS_SECRET_ACCESS_KEY")
+
+       access_key_id = "my_access_key_id"
+       secret_access_key = "my_secret_access_key"
+       os.environ["AWS_ACCESS_KEY_ID"] = access_key_id 
+       os.environ["AWS_SECRET_ACCESS_KEY"] = secret_access_key 
+       tide_grabber = initializeTideGrabber(args)
+    except SystemExit as e:
+        assert False
+    else:
+        assert tide_grabber.startDate == startDate
+        assert tide_grabber.endDate == endDate
+        assert tide_grabber.savePath == expected_savePath
+        assert tide_grabber.stationID == station_id 
+        assert tide_grabber.bucketName == bucketName 
+        assert tide_grabber.s3Key == s3Key
+        assert tide_grabber.useAccessKeys == True 
+        assert tide_grabber.access_key_id == access_key_id 
+        assert tide_grabber.secret_access_key == secret_access_key
+    finally:
+        if old_access_key is None:
+            del os.environ["AWS_ACCESS_KEY_ID"] 
+        else:
+            os.environ["AWS_ACCESS_KEY_ID"] = old_access_key
+
+        if old_access_key is None:
+            del os.environ["AWS_SECRET_ACCESS_KEY"]
+        else:
+            os.environ["AWS_SECRET_ACCESS_KEY"] = old_secret_access_key
+
+
+
 def test_TideGrabber_request_sucess():
     """Test the behaviour of of TideGrabber.request on success
 
