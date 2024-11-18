@@ -88,17 +88,19 @@ class TideGrabber():
     
     def uploadTides(self):
         # Initialize the S3 client
-        s3_client = boto3.client('s3')
-
-        # Specify the details
-        bucket_name = 'my-bucket'
-        file_path = 'path/to/local/file.txt'            # Local path to the file you want to upload
-        s3_key = 'uploads/file.txt'                     # S3 key (the destination path in S3)
+        if self.useAccessKeys:
+            s3_client = boto3.client(
+                's3',
+                aws_access_key_id='your_access_key',
+                aws_secret_access_key='your_secret_key'
+            )
+        else:
+            s3_client = boto3.client('s3')
 
         # Upload the file
         s3_client.upload_file(self.savePath, self.bucketName, self.s3Key)
 
-        print(f"File uploaded to s3://{bucket_name}/{s3_key}")
+        print(f"File uploaded to s3://{self.bucket_name}/{self.s3_key}")
 
     def run(self):    
         response_content = self.request()
