@@ -9,7 +9,7 @@ import boto3
 
 
 class TideGrabber():
-    def __init__(self, startDate: str, endDate: str, saveDir: str, station_id: str, bucketName: str, s3Key: str, interval: str = 'h'):
+    def __init__(self, startDate: str, endDate: str, saveDir: str, station_id: str, bucketName: str, s3Key: str, interval: str = 'h', useAccessKeys: bool = False, access_key_id: str = None, secret_access_key: str = None):
         """Initializes a tide grabber object
 
         Parameters
@@ -30,6 +30,9 @@ class TideGrabber():
         self.interval = interval
         self.bucketName = bucketName 
         self.s3Key = s3Key 
+        self.useAccessKeys = useAccessKeys
+        self.access_key_id = access_key_id
+        self.secret_access_key = secret_access_key
         return
 
     def formatSavePath(self):
@@ -133,12 +136,18 @@ def initializeTideGrabber(args) -> TideGrabber:
     parser.add_argument('--interval', help='interval')
     parser.add_argument('--timezone', help='timezone')
     parser.add_argument('--datum', help='datum')
+    parser.add_argument('--useAccessKeys', action='store_true', help='Use when using env variables as access keys')
 
     args_ = parser.parse_args(args)
 
     checkDirExists(args_.saveDir)
 
-    tide_grabber = TideGrabber(args_.startdate, args_.enddate, args_.saveDir, args_.stationid, args_.bucketName, args_.s3Key)
+    access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
+    secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    if args_.useAccessKeys and access_key_id is None and secret_access_key is None:
+        sys.exit(1)
+
+    tide_grabber = TideGrabber(args_.startdate, args_.enddate, args_.saveDir, args_.stationid, args_.bucketName, args_.s3Key, useAccessKeys = args_.useAccessKeys, access_key_id=access_key_id, secret_access_key=secret_access_key)
     return tide_grabber
 
 if __name__ == "__main__":
