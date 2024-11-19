@@ -91,8 +91,8 @@ class TideGrabber():
         if self.useAccessKeys:
             s3_client = boto3.client(
                 's3',
-                aws_access_key_id='your_access_key',
-                aws_secret_access_key='your_secret_key'
+                aws_access_key_id=self.access_key_id,
+                aws_secret_access_key=self.secret_access_key
             )
         else:
             s3_client = boto3.client('s3')
