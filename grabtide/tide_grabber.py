@@ -92,14 +92,12 @@ class TideGrabber():
             s3_client = boto3.client(
                 's3',
                 aws_access_key_id=self.access_key_id,
-                aws_secret_access_key=self.secret_access_key
+                aws_secret_access_key=self.secret_access_key,
+                # HARDCODED. Fix later
+                region_name="us-west-2"
             )
         else:
             s3_client = boto3.client('s3')
-
-        # debuging
-        session = boto3.Session()
-        print(session.region_name)
 
         # Upload the file
         s3_client.upload_file(self.savePath, self.bucketName, self.s3Key)
