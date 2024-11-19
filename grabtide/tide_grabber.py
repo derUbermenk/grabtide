@@ -100,7 +100,7 @@ class TideGrabber():
         # Upload the file
         s3_client.upload_file(self.savePath, self.bucketName, self.s3Key)
 
-        print(f"File uploaded to s3://{self.bucket_name}/{self.s3_key}")
+        print(f"File uploaded to s3://{self.bucketName}/{self.s3Key}")
 
     def run(self):    
         response_content = self.request()
