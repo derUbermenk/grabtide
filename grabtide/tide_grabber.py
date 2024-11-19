@@ -140,6 +140,8 @@ def initializeTideGrabber(args) -> TideGrabber:
     parser.add_argument('--datum', help='datum')
     parser.add_argument('--useAccessKeys', action='store_true', help='Use when using env variables as access keys')
 
+    print(args)
+
     args_ = parser.parse_args(args)
 
     checkDirExists(args_.saveDir)
