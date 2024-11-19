@@ -97,6 +97,10 @@ class TideGrabber():
         else:
             s3_client = boto3.client('s3')
 
+        # debuging
+        session = boto3.Session()
+        print(session.region_name)
+
         # Upload the file
         s3_client.upload_file(self.savePath, self.bucketName, self.s3Key)
 
