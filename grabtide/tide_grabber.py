@@ -150,11 +150,12 @@ def initializeTideGrabber(args) -> TideGrabber:
 
     access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
     secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    # Debugging code. Remove
     print(
 f"""
 Using the ff aws keys:
-    access_key: {access_key_id}
-    secret_access_key: {secret_access_key}
+    access_key: {access_key_id}:
+    secret_access_key: {secret_access_key}:
 """
     )
     if args_.useAccessKeys and access_key_id is None and secret_access_key is None:
